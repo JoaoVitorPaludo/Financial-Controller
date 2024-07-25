@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  password String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tokens Token[]
+  Transaction Transaction[]
+
+  @@map("tb_users")
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  idUser    Int
+  token     String
+  createdAt DateTime @default(now())
+
+  User User? @relation(fields: [idUser], references: [id])
+
+  @@map("tb_tokens")
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+  idUser Int
+  title     String
+  value     Float
+  type      Int      @default(0)
+  date      DateTime
+  createdAt DateTime @default(now())
+
+  User User? @relation(fields: [idUser], references: [id])
+
+  @@map("tb_transactions")
+}
